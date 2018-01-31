@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Environment;
+import android.util.Log;
 
 import com.image.loader.library.disklrucache.DiskLruCache;
 
@@ -19,6 +20,7 @@ import java.io.OutputStream;
  */
 
 public class DiskEngine extends BaseEngine {
+    private static final String TAG = "DiskEngine";
     private static final long DEFAULT_CACHE_SIZE = 1024L * 1024 * 50;
     private static final int DEFAULT_APP_VERRSION = 1;
     private static final int DEFAULT_COUNT = 1;
@@ -57,6 +59,8 @@ public class DiskEngine extends BaseEngine {
             } catch (IOException e) {
                 loadNext(url, listener);
             }
+        } else {
+            loadNext(url, listener);
         }
     }
 
@@ -65,8 +69,8 @@ public class DiskEngine extends BaseEngine {
             next.load(url, new EngineListener() {
                 @Override
                 public void onLoad(String url, Bitmap bitmap) {
-                    listener.onLoad(url, bitmap);
                     diskCache(url, bitmap);
+                    listener.onLoad(url, bitmap);
                 }
 
                 @Override
@@ -80,6 +84,10 @@ public class DiskEngine extends BaseEngine {
     }
 
     private void diskCache(String url, Bitmap bitmap) {
+        if (mDiskLruCache == null) {
+            Log.e(TAG, "diskCache error, mDiskLruCache is not init");
+            return;
+        }
         String key = EngineUtil.Md5(url);
         try {
             DiskLruCache.Editor editor = mDiskLruCache.edit(key);

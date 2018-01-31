@@ -3,8 +3,10 @@ package com.image.loader.library.engine;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * @author obo
@@ -15,11 +17,11 @@ public class EngineManager extends BaseEngine {
 
     private static EngineManager INSTANCE;
 
-    LinkedList<BaseEngine> engines = new LinkedList<>();
     private EngineManager() {
         init();
     }
-    public static EngineManager getInstance(){
+
+    public static EngineManager getInstance() {
         if (INSTANCE == null) {
             synchronized (EngineManager.class) {
                 if (INSTANCE == null) {
@@ -29,21 +31,22 @@ public class EngineManager extends BaseEngine {
         }
         return INSTANCE;
     }
+
     private void init() {
+        List<BaseEngine> engines = new ArrayList<>();
         engines.add(new MemoryEngine());
         engines.add(new DiskEngine());
         engines.add(new NetworkEngine());
         next = makeChain(engines);
     }
 
-    private BaseEngine makeChain(LinkedList<BaseEngine> engines) {
+    private BaseEngine makeChain(List<BaseEngine> engines) {
         int size = engines.size();
-        for (int i = 0; i < size - 1; i ++) {
+        for (int i = 0; i < size - 1; i++) {
             engines.get(i).next = engines.get(i + 1);
         }
         return engines.get(0);
     }
-
 
     @Override
     public void load(String url, final EngineListener listener) {

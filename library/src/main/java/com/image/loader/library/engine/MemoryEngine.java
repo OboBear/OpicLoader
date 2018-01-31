@@ -21,7 +21,7 @@ public class MemoryEngine extends BaseEngine {
             mBitmapLruCache = new LruCache<>(DEFAULT_SIZE);
         }
 
-        Bitmap result = mBitmapLruCache.remove(url);
+        Bitmap result = mBitmapLruCache.get(url);
         if (result != null) {
             listener.onLoad(url, result);
         } else {
